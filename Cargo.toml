@@ -6,3 +6,18 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# async 
+futures-lite = "1.13"
+tokio = {version = "1.30", features = ["rt-multi-thread", "macros"]}
+
+# error handling
+color-eyre = "0.6"
+eyre = "0.6"
+thiserror = "1.0"
+
+# http
+axum = "0.6.20"
+
+# logging
+log = "0.4"
+pretty_env_logger = "0.5"
