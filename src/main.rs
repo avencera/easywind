@@ -1,14 +1,16 @@
 pub mod consts;
 
 use axum::{
+    body::{self, Empty, Full},
     extract::Path,
-    response::{Html, IntoResponse},
+    http::{header, HeaderValue, StatusCode},
+    response::{Html, IntoResponse, Response},
     routing::get,
     Router,
 };
 use eyre::Result;
 use sailfish::TemplateOnce;
-use std::{fmt::Display, fs::DirEntry, net::SocketAddr, path::PathBuf};
+use std::{fmt::Display, fs::DirEntry, io::Read, net::SocketAddr, path::PathBuf};
 
 #[derive(Debug)]
 enum File {
@@ -66,9 +68,13 @@ async fn path(Path(path): Path<PathBuf>) -> impl IntoResponse {
     let new_path = root;
 
     if new_path.is_dir() {
-        index_template(new_path)
+        index_template(new_path).into_response()
     } else {
-        std::fs::read_to_string(new_path).unwrap().into()
+        if new_path.ends_with(".html") {
+            std::fs::read_to_string(new_path).unwrap().into_response()
+        } else {
+            static_path(new_path).into_response()
+        }
     }
 }
 
@@ -98,6 +104,32 @@ fn index_template(path: PathBuf) -> Html<String> {
     let template = IndexTemplate { links }.render_once().unwrap();
 
     template.into()
+}
+
+fn static_path(path: PathBuf) -> impl IntoResponse {
+    let mime_type = mime_guess::from_path(&path).first_or_text_plain();
+
+    match std::fs::File::open(path).ok() {
+        None => Response::builder()
+            .status(StatusCode::NOT_FOUND)
+            .body(body::boxed(Empty::new()))
+            .unwrap(),
+        Some(mut file) => {
+            let mut buffer =
+                vec![0; file.metadata().expect("unable to get metadata").len() as usize];
+
+            file.read_exact(&mut buffer).expect("buffer overflow");
+
+            Response::builder()
+                .status(StatusCode::OK)
+                .header(
+                    header::CONTENT_TYPE,
+                    HeaderValue::from_str(mime_type.as_ref()).unwrap(),
+                )
+                .body(body::boxed(Full::from(buffer)))
+                .unwrap()
+        }
+    }
 }
 
 #[tokio::main]
