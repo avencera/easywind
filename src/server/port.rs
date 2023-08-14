@@ -9,8 +9,10 @@ pub fn default_or_available(port: u16) -> Option<u16> {
 }
 
 pub fn get_available() -> Option<u16> {
-    (3000..5000)
-        .chain(8000..9000)
+    (3500..3999)
+        .chain(4001..4999)
+        .chain(5001..5999)
+        .chain(8001..8999)
         .find(|port| is_available(*port))
 }
 

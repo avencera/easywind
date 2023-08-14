@@ -27,7 +27,7 @@ pub struct ServerArgs {
     #[clap(default_value = ".")]
     pub root_dir: PathBuf,
 
-    #[clap(short, long, default_value = "3000")]
+    #[clap(short, long, default_value = "3500")]
     pub port: u16,
 }
 

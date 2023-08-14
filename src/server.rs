@@ -170,8 +170,8 @@ pub async fn start(root_dir: PathBuf, port: u16) -> Result<()> {
     let port = port::default_or_available(port).expect("Unable to find available port");
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
 
-    info!("serving html from {}", state.root_dir.to_string_lossy());
-    info!("starting server at {}", addr);
+    info!("Serving html from {}", state.root_dir.to_string_lossy());
+    info!("Starting server at {}", addr);
 
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
