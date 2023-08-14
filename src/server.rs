@@ -27,6 +27,12 @@ struct AppState {
     root_dir: PathBuf,
 }
 
+pub struct Args {
+    pub root_dir: PathBuf,
+    pub port: u16,
+    pub open: bool,
+}
+
 #[derive(Debug)]
 enum File {
     Dir(PathBuf),
@@ -159,15 +165,17 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
     }
 }
 
-pub async fn start(root_dir: PathBuf, port: u16) -> Result<()> {
-    let state = AppState { root_dir };
+pub async fn start(args: Args) -> Result<()> {
+    let state = AppState {
+        root_dir: args.root_dir,
+    };
 
     let app = Router::new()
         .route("/", get(root))
         .route("/*path", get(path))
         .with_state(state.clone());
 
-    let port = port::default_or_available(port).expect("Unable to find available port");
+    let port = port::default_or_available(args.port).expect("Unable to find available port");
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
 
     info!("Serving html from {}", state.root_dir.to_string_lossy());

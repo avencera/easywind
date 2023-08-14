@@ -23,12 +23,17 @@ enum Commands {
 }
 
 #[derive(Parser, Debug, Clone)]
-pub struct ServerArgs {
+pub(crate) struct ServerArgs {
     #[clap(default_value = ".")]
     pub root_dir: PathBuf,
 
+    /// Port the server shoud use, defaults to 3500
     #[clap(short, long, default_value = "3500")]
     pub port: u16,
+
+    /// Open in your browser
+    #[clap(short, long)]
+    pub open: bool,
 }
 
 #[tokio::main]
@@ -39,9 +44,9 @@ async fn main() -> Result<()> {
 
     match cli {
         CliArgs {
-            command: Commands::Server(ServerArgs { root_dir, port }),
+            command: Commands::Server(args),
         } => {
-            server::start(root_dir, port).await?;
+            server::start(args.into()).await?;
         }
     }
 

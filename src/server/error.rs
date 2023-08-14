@@ -4,6 +4,7 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
+use log::error;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -32,6 +33,8 @@ pub enum Error {
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
+        error!("{:?}", self);
+
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             format!("Something went wrong: {:?}", self),
