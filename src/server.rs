@@ -33,15 +33,6 @@ enum File {
     File(PathBuf),
 }
 
-impl File {
-    fn into_path_buf(self) -> PathBuf {
-        match self {
-            Self::Dir(path) => path,
-            Self::File(path) => path,
-        }
-    }
-}
-
 impl Display for File {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(
@@ -76,6 +67,7 @@ fn canonicalize(path: &PathBuf) -> Result<PathBuf, Error> {
 }
 
 async fn root(State(state): State<AppState>) -> Result<Html<String>, Error> {
+    info!("GET /");
     let root = canonicalize(&state.root_dir)?;
     index_template(&root, root.clone())
 }
@@ -84,6 +76,8 @@ async fn path(
     State(state): State<AppState>,
     Path(path): Path<PathBuf>,
 ) -> Result<impl IntoResponse, Error> {
+    info!("GET {}", path.to_string_lossy());
+
     let root = canonicalize(&state.root_dir)?;
 
     let mut path_to_serve = root.clone();
@@ -106,16 +100,19 @@ async fn path(
 fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Error> {
     let root = canonicalize(root_dir)?;
 
-    let paths: Vec<File> = std::fs::read_dir(path)?
+    let paths: Vec<PathBuf> = std::fs::read_dir(path)?
         .filter_map(Result::ok)
-        .map(Into::into)
+        .map(|dir_entry| dir_entry.path())
         .collect::<Vec<_>>();
 
     let links = paths
         .into_iter()
-        .map(|path| path.into_path_buf())
         .filter_map(|path| Some(path.strip_prefix(&root).ok()?.to_string_lossy().to_string()))
         .collect::<Vec<_>>();
+
+    if let Some(path) = links.iter().find(|p| p.as_str() == "index.html") {
+        return Ok(std::fs::read_to_string(root.join(path))?.into());
+    }
 
     let template = IndexTemplate { links }.render_once()?;
 
