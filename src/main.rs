@@ -8,7 +8,7 @@ use easywind::server;
 use eyre::Result;
 
 #[derive(Debug, Parser)]
-#[command(author, version, about)]
+#[command(display_name = "EasyWind", author, version, about)]
 #[command(arg_required_else_help(true))]
 pub struct CliArgs {
     #[command(subcommand)]
