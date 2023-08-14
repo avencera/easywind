@@ -1,9 +1,0 @@
-<<!doctype html>
-<html lang="en">
-  <head></head>
-  <body>
-  <% for link in &links { %>
-    <a href="<%= link %>"><%= link %></a>
-  <% } %>
-  </body>
-</html>

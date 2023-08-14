@@ -12,9 +12,9 @@ pub enum Error {
     #[error("Invalid root dir path: {0}")]
     InvalidRootDir(PathBuf),
 
-    #[error("Unable to render template: {0}")]
-    TemplateError(#[from] sailfish::RenderError),
-
+    // #[error("Unable to render template: {0}")]
+    // TemplateError(#[from] sailfish::RenderError),
+    //
     #[error(transparent)]
     HttpError(#[from] axum::http::Error),
 

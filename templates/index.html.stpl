@@ -1,8 +1,0 @@
-<html>
-  <head></head>
-  <body>
-  <% for link in &links { %>
-    <a href="<%= link %>"><%= link %></a>
-  <% } %>
-  </body>
-</html>

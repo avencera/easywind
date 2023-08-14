@@ -1,5 +1,6 @@
 pub mod error;
 pub mod port;
+pub mod template;
 
 use axum::{
     body::{self, Empty, Full},
@@ -11,7 +12,7 @@ use axum::{
 };
 use eyre::Result;
 use log::info;
-use sailfish::TemplateOnce;
+
 use std::{
     fmt::Display,
     fs::{DirEntry, File as StdFile},
@@ -20,7 +21,10 @@ use std::{
     path::PathBuf,
 };
 
-use self::error::Error;
+use self::{
+    error::Error,
+    template::{TemplateName, TEMPLATE},
+};
 
 #[derive(Clone)]
 struct AppState {
@@ -49,12 +53,6 @@ impl Display for File {
             .as_ref(),
         )
     }
-}
-
-#[derive(TemplateOnce)]
-#[template(path = "index.html.stpl")]
-struct IndexTemplate {
-    links: Vec<String>,
 }
 
 impl From<DirEntry> for File {
@@ -124,7 +122,11 @@ fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Err
         .filter_map(|path| Some(path.strip_prefix(&root).ok()?.to_string_lossy().to_string()))
         .collect::<Vec<_>>();
 
-    let template = IndexTemplate { links }.render_once()?;
+    let ctx: serde_json::Value = serde_json::json!({
+        "links": links,
+    });
+
+    let template = TEMPLATE.render(TemplateName::Index, &ctx);
 
     Ok(template.into())
 }
