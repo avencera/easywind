@@ -23,7 +23,7 @@ enum File {
 }
 
 impl File {
-    fn to_path_buf(self) -> PathBuf {
+    fn into_path_buf(self) -> PathBuf {
         match self {
             Self::Dir(path) => path,
             Self::File(path) => path,
@@ -61,29 +61,34 @@ impl From<DirEntry> for File {
 }
 
 async fn root(State(state): State<AppState>) -> Html<String> {
-    let root = std::fs::canonicalize(&state.root_dir).unwrap();
+    let root = std::fs::canonicalize(state.root_dir).unwrap();
     index_template(&root, root.clone())
 }
 
 async fn path(State(state): State<AppState>, Path(path): Path<PathBuf>) -> impl IntoResponse {
-    let root = std::fs::canonicalize(&state.root_dir).unwrap();
+    let root = std::fs::canonicalize(state.root_dir).unwrap();
 
-    let mut new_path = root.clone();
-    new_path.push(path);
+    let mut path_to_serve = root.clone();
+    path_to_serve.push(path);
 
-    if new_path.is_dir() {
-        index_template(&root, new_path).into_response()
-    } else {
-        if new_path.ends_with(".html") {
-            std::fs::read_to_string(new_path).unwrap().into_response()
-        } else {
-            static_path(new_path).into_response()
-        }
+    // directory list all files
+    if path_to_serve.is_dir() {
+        return index_template(&root, path_to_serve).into_response();
+    };
+
+    // serve html files
+    if path_to_serve.ends_with(".html") {
+        return std::fs::read_to_string(path_to_serve)
+            .unwrap()
+            .into_response();
     }
+
+    // any other file, create response depending on mime type
+    static_path(path_to_serve).into_response()
 }
 
 fn index_template(root_dir: &PathBuf, path: PathBuf) -> Html<String> {
-    let root = std::fs::canonicalize(&root_dir)
+    let root = std::fs::canonicalize(root_dir)
         .unwrap()
         .to_string_lossy()
         .to_string();
@@ -96,7 +101,7 @@ fn index_template(root_dir: &PathBuf, path: PathBuf) -> Html<String> {
 
     let links = paths
         .into_iter()
-        .map(|path| path.to_path_buf())
+        .map(|path| path.into_path_buf())
         .map(|path| {
             path.strip_prefix(&root)
                 .unwrap()
