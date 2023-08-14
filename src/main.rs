@@ -46,6 +46,10 @@ async fn main() -> Result<()> {
         CliArgs {
             command: Commands::Server(args),
         } => {
+            if args.open {
+                open::that(format!("http://localhost:{}", args.port))?;
+            }
+
             server::start(args.into()).await?;
         }
     }
