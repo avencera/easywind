@@ -69,6 +69,14 @@ fn canonicalize(path: &PathBuf) -> Result<PathBuf, Error> {
 async fn root(State(state): State<AppState>) -> Result<Html<String>, Error> {
     info!("GET /");
     let root = canonicalize(&state.root_dir)?;
+
+    // if is a directory with an "index.html" file, serve that
+    if root.is_dir() {
+        if let Ok(index) = std::fs::read_to_string(root.join("index.html")) {
+            return Ok(Html(index));
+        }
+    }
+
     index_template(&root, root.clone())
 }
 
@@ -109,10 +117,6 @@ fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Err
         .into_iter()
         .filter_map(|path| Some(path.strip_prefix(&root).ok()?.to_string_lossy().to_string()))
         .collect::<Vec<_>>();
-
-    if let Some(path) = links.iter().find(|p| p.as_str() == "index.html") {
-        return Ok(std::fs::read_to_string(root.join(path))?.into());
-    }
 
     let template = IndexTemplate { links }.render_once()?;
 
