@@ -11,7 +11,13 @@ use axum::{
 use eyre::Result;
 use log::info;
 use sailfish::TemplateOnce;
-use std::{fmt::Display, fs::DirEntry, io::Read, net::SocketAddr, path::PathBuf};
+use std::{
+    fmt::Display,
+    fs::{DirEntry, File as StdFile},
+    io::Read,
+    net::SocketAddr,
+    path::PathBuf,
+};
 
 use self::error::Error;
 
@@ -118,7 +124,7 @@ fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Err
 fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
     let mime_type = mime_guess::from_path(&path).first_or_text_plain();
 
-    match std::fs::File::open(path).ok() {
+    match StdFile::open(&path).ok() {
         None => {
             let response = Response::builder()
                 .status(StatusCode::NOT_FOUND)
@@ -128,10 +134,15 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
         }
 
         Some(mut file) => {
-            let mut buffer =
-                vec![0; file.metadata().expect("unable to get metadata").len() as usize];
+            let mut buffer = vec![
+                0;
+                file.metadata()
+                    .map_err(|_| Error::FileMetadataError(path.clone()))?
+                    .len() as usize
+            ];
 
-            file.read_exact(&mut buffer).expect("buffer overflow");
+            file.read_exact(&mut buffer)
+                .map_err(|_| Error::FileReadBufferOverflow(path))?;
 
             let response = Response::builder()
                 .status(StatusCode::OK)

@@ -20,6 +20,12 @@ pub enum Error {
     #[error(transparent)]
     IoError(#[from] std::io::Error),
 
+    #[error("Unable to get metadata for file, path: {0}")]
+    FileMetadataError(PathBuf),
+
+    #[error("File larger than metadata reported, path: {0}")]
+    FileReadBufferOverflow(PathBuf),
+
     #[error(transparent)]
     Unknown(#[from] eyre::Report),
 }
