@@ -1,3 +1,5 @@
+pub mod error;
+
 use axum::{
     body::{self, Empty, Full},
     extract::{Path, State},
@@ -10,6 +12,8 @@ use eyre::Result;
 use log::info;
 use sailfish::TemplateOnce;
 use std::{fmt::Display, fs::DirEntry, io::Read, net::SocketAddr, path::PathBuf};
+
+use self::error::Error;
 
 #[derive(Clone)]
 struct AppState {
@@ -60,41 +64,42 @@ impl From<DirEntry> for File {
     }
 }
 
-async fn root(State(state): State<AppState>) -> Html<String> {
-    let root = std::fs::canonicalize(state.root_dir).unwrap();
+fn canonicalize(path: &PathBuf) -> Result<PathBuf, Error> {
+    std::fs::canonicalize(path).map_err(|_| Error::InvalidRootDir(path.clone()))
+}
+
+async fn root(State(state): State<AppState>) -> Result<Html<String>, Error> {
+    let root = canonicalize(&state.root_dir)?;
     index_template(&root, root.clone())
 }
 
-async fn path(State(state): State<AppState>, Path(path): Path<PathBuf>) -> impl IntoResponse {
-    let root = std::fs::canonicalize(state.root_dir).unwrap();
+async fn path(
+    State(state): State<AppState>,
+    Path(path): Path<PathBuf>,
+) -> Result<impl IntoResponse, Error> {
+    let root = canonicalize(&state.root_dir)?;
 
     let mut path_to_serve = root.clone();
     path_to_serve.push(path);
 
     // directory list all files
     if path_to_serve.is_dir() {
-        return index_template(&root, path_to_serve).into_response();
+        return Ok(index_template(&root, path_to_serve).into_response());
     };
 
     // serve html files
     if path_to_serve.ends_with(".html") {
-        return std::fs::read_to_string(path_to_serve)
-            .unwrap()
-            .into_response();
+        return Ok(std::fs::read_to_string(path_to_serve)?.into_response());
     }
 
     // any other file, create response depending on mime type
-    static_path(path_to_serve).into_response()
+    Ok(static_path(path_to_serve).into_response())
 }
 
-fn index_template(root_dir: &PathBuf, path: PathBuf) -> Html<String> {
-    let root = std::fs::canonicalize(root_dir)
-        .unwrap()
-        .to_string_lossy()
-        .to_string();
+fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Error> {
+    let root = canonicalize(root_dir)?;
 
-    let paths: Vec<File> = std::fs::read_dir(path)
-        .unwrap()
+    let paths: Vec<File> = std::fs::read_dir(path)?
         .filter_map(Result::ok)
         .map(Into::into)
         .collect::<Vec<_>>();
@@ -102,41 +107,41 @@ fn index_template(root_dir: &PathBuf, path: PathBuf) -> Html<String> {
     let links = paths
         .into_iter()
         .map(|path| path.into_path_buf())
-        .map(|path| {
-            path.strip_prefix(&root)
-                .unwrap()
-                .to_string_lossy()
-                .to_string()
-        })
+        .filter_map(|path| Some(path.strip_prefix(&root).ok()?.to_string_lossy().to_string()))
         .collect::<Vec<_>>();
 
-    let template = IndexTemplate { links }.render_once().unwrap();
+    let template = IndexTemplate { links }.render_once()?;
 
-    template.into()
+    Ok(template.into())
 }
 
-fn static_path(path: PathBuf) -> impl IntoResponse {
+fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
     let mime_type = mime_guess::from_path(&path).first_or_text_plain();
 
     match std::fs::File::open(path).ok() {
-        None => Response::builder()
-            .status(StatusCode::NOT_FOUND)
-            .body(body::boxed(Empty::new()))
-            .unwrap(),
+        None => {
+            let response = Response::builder()
+                .status(StatusCode::NOT_FOUND)
+                .body(body::boxed(Empty::new()))?;
+
+            Ok(response)
+        }
+
         Some(mut file) => {
             let mut buffer =
                 vec![0; file.metadata().expect("unable to get metadata").len() as usize];
 
             file.read_exact(&mut buffer).expect("buffer overflow");
 
-            Response::builder()
+            let response = Response::builder()
                 .status(StatusCode::OK)
                 .header(
                     header::CONTENT_TYPE,
                     HeaderValue::from_str(mime_type.as_ref()).unwrap(),
                 )
-                .body(body::boxed(Full::from(buffer)))
-                .unwrap()
+                .body(body::boxed(Full::from(buffer)))?;
+
+            Ok(response)
         }
     }
 }

@@ -17,7 +17,7 @@ pub struct CliArgs {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-    /// Run a live reload server to serve tailwind content
+    /// Run a live reloading server to serve tailwind content
     #[command(name = "serve", visible_aliases = ["s", "server"])]
     Server(ServerArgs),
 }
