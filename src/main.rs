@@ -26,6 +26,9 @@ enum Commands {
 pub struct ServerArgs {
     #[clap(default_value = ".")]
     pub root_dir: PathBuf,
+
+    #[clap(short, long, default_value = "3000")]
+    pub port: u16,
 }
 
 #[tokio::main]
@@ -36,9 +39,9 @@ async fn main() -> Result<()> {
 
     match cli {
         CliArgs {
-            command: Commands::Server(ServerArgs { root_dir }),
+            command: Commands::Server(ServerArgs { root_dir, port }),
         } => {
-            server::start(root_dir).await?;
+            server::start(root_dir, port).await?;
         }
     }
 

@@ -158,7 +158,7 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
     }
 }
 
-pub async fn start(root_dir: PathBuf) -> Result<()> {
+pub async fn start(root_dir: PathBuf, port: u16) -> Result<()> {
     let state = AppState { root_dir };
 
     let app = Router::new()
@@ -166,7 +166,7 @@ pub async fn start(root_dir: PathBuf) -> Result<()> {
         .route("/*path", get(path))
         .with_state(state.clone());
 
-    let port = port::default_or_available(3000).expect("Unable to find available port");
+    let port = port::default_or_available(port).expect("Unable to find available port");
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
 
     info!("serving html from {}", state.root_dir.to_string_lossy());
