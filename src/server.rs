@@ -1,4 +1,5 @@
 pub mod error;
+pub mod port;
 
 use axum::{
     body::{self, Empty, Full},
@@ -165,7 +166,8 @@ pub async fn start(root_dir: PathBuf) -> Result<()> {
         .route("/*path", get(path))
         .with_state(state.clone());
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let port = port::default_or_available(3000).expect("Unable to find available port");
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
 
     info!("serving html from {}", state.root_dir.to_string_lossy());
     info!("starting server at {}", addr);
