@@ -1,4 +1,5 @@
 pub mod error;
+pub mod no_cache;
 pub mod port;
 pub mod template;
 
@@ -12,6 +13,8 @@ use axum::{
 };
 use eyre::Result;
 use log::info;
+use notify::{Event, Watcher};
+use tower_livereload::LiveReloadLayer;
 
 use std::{
     fmt::Display,
@@ -169,13 +172,32 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
 
 pub async fn start(args: Args) -> Result<()> {
     let state = AppState {
-        root_dir: args.root_dir,
+        root_dir: args.root_dir.clone(),
     };
+
+    let livereload = LiveReloadLayer::new();
+    let reloader = livereload.reloader();
+
+    let mut watcher = notify::recommended_watcher(move |event: notify::Result<Event>| {
+        let Ok(event) = event else {
+            return eprintln!("watch error: {:?}", event.unwrap_err());
+        };
+
+        if let Some(path) = event.paths.first() {
+            info!("Reloading {} ...", path.to_string_lossy());
+            reloader.reload()
+        }
+    })
+    .unwrap();
+
+    watcher.watch(&args.root_dir, notify::RecursiveMode::Recursive)?;
 
     let app = Router::new()
         .route("/", get(root))
         .route("/*path", get(path))
-        .with_state(state.clone());
+        .with_state(state.clone())
+        .layer(livereload)
+        .layer(no_cache::layer());
 
     let port = port::default_or_available(args.port).expect("Unable to find available port");
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
