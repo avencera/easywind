@@ -45,6 +45,6 @@ impl Template<'_> {
     }
 }
 
-static INDEX_FILE: &str = std::include_str!("../../templates/index.html.j2");
+static INDEX_FILE: &str = std::include_str!("../templates/index.html.j2");
 pub static TEMPLATE: Lazy<Template> =
     Lazy::new(|| Template::new().add_new(TemplateName::Index, INDEX_FILE));

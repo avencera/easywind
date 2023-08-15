@@ -1,7 +1,6 @@
 pub mod error;
 pub mod no_cache;
 pub mod port;
-pub mod template;
 
 use axum::{
     body::{self, Empty, Full},
@@ -25,10 +24,8 @@ use std::{
     time::Duration,
 };
 
-use self::{
-    error::Error,
-    template::{TemplateName, TEMPLATE},
-};
+use self::error::Error;
+use crate::template::{TemplateName, TEMPLATE};
 
 #[derive(Clone)]
 struct AppState {
