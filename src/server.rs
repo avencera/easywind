@@ -12,8 +12,8 @@ use axum::{
     Router,
 };
 use eyre::Result;
-use log::info;
-use notify::{Event, Watcher};
+use log::{error, info};
+use notify_debouncer_mini::{notify::RecursiveMode, DebounceEventResult};
 use tower_livereload::LiveReloadLayer;
 
 use std::{
@@ -22,6 +22,7 @@ use std::{
     io::Read,
     net::SocketAddr,
     path::PathBuf,
+    time::Duration,
 };
 
 use self::{
@@ -178,19 +179,25 @@ pub async fn start(args: Args) -> Result<()> {
     let livereload = LiveReloadLayer::new();
     let reloader = livereload.reloader();
 
-    let mut watcher = notify::recommended_watcher(move |event: notify::Result<Event>| {
-        let Ok(event) = event else {
-            return eprintln!("watch error: {:?}", event.unwrap_err());
-        };
+    let mut debouncer = notify_debouncer_mini::new_debouncer(
+        Duration::from_millis(90),
+        None,
+        move |res: DebounceEventResult| match res {
+            Ok(events) => events.iter().for_each(|event| {
+                info!("Reloading {} ...", event.path.to_string_lossy());
+                reloader.reload()
+            }),
 
-        if let Some(path) = event.paths.first() {
-            info!("Reloading {} ...", path.to_string_lossy());
-            reloader.reload()
-        }
-    })
+            Err(errors) => errors
+                .iter()
+                .for_each(|error| error!("Watcher Error {error:?}")),
+        },
+    )
     .unwrap();
 
-    watcher.watch(&args.root_dir, notify::RecursiveMode::Recursive)?;
+    debouncer
+        .watcher()
+        .watch(&args.root_dir, RecursiveMode::Recursive)?;
 
     let app = Router::new()
         .route("/", get(root))

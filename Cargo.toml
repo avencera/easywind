@@ -23,7 +23,7 @@ http = "0.2.9"
 
 # livereload
 tower-livereload = { version = "0.8"}
-notify = "6.0"
+notify-debouncer-mini = "0.3.0"
 
 # templating 
 minijinja = "1.0"
