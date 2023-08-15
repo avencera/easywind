@@ -4,7 +4,6 @@ pub mod cli;
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
-use easywind::server;
 use eyre::Result;
 
 #[derive(Debug, Parser)]
@@ -17,13 +16,49 @@ pub struct CliArgs {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-    /// Run a live reloading server to serve tailwind content
-    #[command(name = "serve", visible_aliases = ["s", "server"])]
+    /// Start the server and tailwind watcher
+    #[command(visible_aliases = ["s"])]
+    Start(StartArgs),
+
+    /// Run a live reloading server to serve content
+    #[command(name = "serve", visible_aliases = ["server"])]
     Server(ServerArgs),
+
+    /// Run the tailwind watcher that generates the CSS
+    #[command(visible_aliases = ["t"])]
+    Tailwind(TailwindArgs),
+}
+
+#[derive(Parser, Debug, Clone)]
+pub(crate) struct StartArgs {
+    #[clap(default_value = ".")]
+    pub root_dir: PathBuf,
+
+    /// Port the server shoud use, defaults to 3500
+    #[clap(short, long, default_value = "3500")]
+    pub port: u16,
+
+    /// Open in your browser
+    #[clap(short, long)]
+    pub open: bool,
 }
 
 #[derive(Parser, Debug, Clone)]
 pub(crate) struct ServerArgs {
+    #[clap(default_value = ".")]
+    pub root_dir: PathBuf,
+
+    /// Port the server shoud use, defaults to 3500
+    #[clap(short, long, default_value = "3500")]
+    pub port: u16,
+
+    /// Open in your browser
+    #[clap(short, long)]
+    pub open: bool,
+}
+
+#[derive(Parser, Debug, Clone)]
+pub(crate) struct TailwindArgs {
     #[clap(default_value = ".")]
     pub root_dir: PathBuf,
 
@@ -44,13 +79,23 @@ async fn main() -> Result<()> {
 
     match cli {
         CliArgs {
+            command: Commands::Start(args),
+        } => {
+            easywind::start::start(args.into()).await?;
+        }
+        CliArgs {
             command: Commands::Server(args),
         } => {
             if args.open {
                 open::that(format!("http://localhost:{}", args.port))?;
             }
 
-            server::start(args.into()).await?;
+            easywind::server::start(args.into()).await?;
+        }
+        CliArgs {
+            command: Commands::Tailwind(args),
+        } => {
+            easywind::tailwind::start(args.into()).await?;
         }
     }
 
