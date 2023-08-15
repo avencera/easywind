@@ -38,7 +38,7 @@ impl Template<'_> {
         self
     }
 
-    pub fn render(&self, name: TemplateName, context: &serde_json::Value) -> String {
+    pub fn render(&self, name: TemplateName, context: &minijinja::Value) -> String {
         let template = self.env.get_template(name.into()).unwrap();
 
         template.render(context).expect("unable to render template")

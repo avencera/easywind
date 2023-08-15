@@ -293,7 +293,6 @@ dependencies = [
  "once_cell",
  "open",
  "pretty_env_logger",
- "serde_json",
  "thiserror",
  "tokio",
  "tower",

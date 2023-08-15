@@ -27,7 +27,6 @@ notify-debouncer-mini = "0.3.0"
 
 # templating 
 minijinja = "1.0"
-serde_json = "1.0.104"
 
 # logging
 log = "0.4"

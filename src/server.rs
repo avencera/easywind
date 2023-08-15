@@ -123,10 +123,7 @@ fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Err
         .filter_map(|path| Some(path.strip_prefix(&root).ok()?.to_string_lossy().to_string()))
         .collect::<Vec<_>>();
 
-    let ctx: serde_json::Value = serde_json::json!({
-        "links": links,
-    });
-
+    let ctx: minijinja::Value = minijinja::context! {links => links};
     let template = TEMPLATE.render(TemplateName::Index, &ctx);
 
     Ok(template.into())
