@@ -1,4 +1,4 @@
-use crate::{ServerArgs, StartArgs, TailwindArgs};
+use crate::{InitArgs, ServerArgs, StartArgs, TailwindArgs};
 
 impl From<ServerArgs> for easywind::server::ServerArgs {
     fn from(args: ServerArgs) -> Self {
@@ -29,6 +29,14 @@ impl From<StartArgs> for easywind::start::StartArgs {
             open: args.open,
             input: args.input,
             output: args.output,
+        }
+    }
+}
+
+impl From<InitArgs> for easywind::init::InitArgs {
+    fn from(args: InitArgs) -> Self {
+        Self {
+            project_name: args.project_name,
         }
     }
 }

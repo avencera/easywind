@@ -17,6 +17,10 @@ pub struct CliArgs {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
+    /// Initialize a new project
+    #[command(visible_aliases = ["i"])]
+    Init(InitArgs),
+
     /// Start the server and tailwind watcher
     #[command(visible_aliases = ["s"])]
     Start(StartArgs),
@@ -28,6 +32,15 @@ enum Commands {
     /// Run the tailwind watcher that generates the CSS
     #[command(visible_aliases = ["t"])]
     Tailwind(TailwindArgs),
+}
+
+#[derive(Parser, Debug, Clone)]
+pub(crate) struct InitArgs {
+    /// Name of the project to initialize
+    ///
+    /// This will be used to create a directory with the same name
+    /// (usage: easywind init portfolio)
+    pub project_name: String,
 }
 
 #[derive(Parser, Debug, Clone)]
@@ -75,7 +88,7 @@ pub(crate) struct TailwindArgs {
     pub root_dir: PathBuf,
 
     /// Input css file to process
-    #[clap(short, long, default_value = "src/styles.css")]
+    #[clap(short, long, default_value = "src/app.css")]
     pub input: PathBuf,
 
     /// Where you want the final CSS file to be written
@@ -91,9 +104,19 @@ pub(crate) struct TailwindArgs {
 async fn main() -> Result<()> {
     // initialize logging
     pretty_env_logger::init();
+
+    // pretty errors
+    color_eyre::install()?;
+
     let cli = CliArgs::parse();
 
     match cli {
+        CliArgs {
+            command: Commands::Init(args),
+        } => {
+            easywind::init::run(args.into())?;
+        }
+
         CliArgs {
             command: Commands::Start(args),
         } => {

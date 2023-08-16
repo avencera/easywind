@@ -1,14 +1,24 @@
 use minijinja::Environment;
 use once_cell::sync::Lazy;
 
+use strum::EnumIter;
+
+#[cfg(not(feature = "dev"))]
+use std::collections::HashMap;
+#[cfg(not(feature = "dev"))]
+use strum::IntoEnumIterator;
+
+#[derive(EnumIter, Debug, PartialEq, Eq, Hash, Copy, Clone)]
 pub enum TemplateName {
     Index,
+    ProjectIndex,
 }
 
 impl From<TemplateName> for &'static str {
     fn from(template: TemplateName) -> Self {
         match template {
             TemplateName::Index => "index",
+            TemplateName::ProjectIndex => "project_index",
         }
     }
 }
@@ -47,11 +57,38 @@ impl Template<'_> {
 }
 
 #[cfg(not(feature = "dev"))]
-static INDEX_FILE: &str = std::include_str!("../templates/index.html.j2");
+static TEMPLATES_DIR: include_dir::Dir<'_> = include_dir::include_dir!("./templates");
 
 #[cfg(not(feature = "dev"))]
-pub static TEMPLATE: Lazy<Template> =
-    Lazy::new(|| Template::new().add_new(TemplateName::Index, INDEX_FILE));
+pub static TEMPLATE_FILES: Lazy<HashMap<TemplateName, &str>> = Lazy::new(|| {
+    let mut files = std::collections::HashMap::new();
+
+    for template in TemplateName::iter() {
+        let template_name: &str = template.into();
+        let file_name = format!("{}.html.j2", template_name);
+
+        let file = TEMPLATES_DIR
+            .get_file(file_name)
+            .unwrap()
+            .contents_utf8()
+            .expect("Unable to read template file");
+
+        files.insert(template, file);
+    }
+
+    files
+});
+
+#[cfg(not(feature = "dev"))]
+pub static TEMPLATE: Lazy<Template> = Lazy::new(|| {
+    let mut template = Template::new();
+
+    for (name, file) in TEMPLATE_FILES.iter() {
+        template = template.add_new(*name, *file);
+    }
+
+    template
+});
 
 // DEV
 
@@ -89,8 +126,8 @@ impl Template<'_> {
 
 #[cfg(feature = "dev")]
 pub static TEMPLATE: Lazy<Template> = Lazy::new(|| {
-    Template::new().set_loader(move |name| match name {
-        "index" => Ok(std::fs::read_to_string("templates/index.html.j2").ok()),
-        other => panic!("only index is allowed, not {}", other),
+    Template::new().set_loader(move |name| {
+        let file_name = format!("templates/{name}.html.j2");
+        Ok(std::fs::read_to_string(&file_name).ok())
     })
 });
