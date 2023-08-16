@@ -1,6 +1,7 @@
 pub mod error;
 pub mod no_cache;
 pub mod port;
+pub mod reload;
 
 use axum::{
     body::{self, Empty, Full},
@@ -11,7 +12,7 @@ use axum::{
     Router,
 };
 use eyre::Result;
-use log::{error, info};
+use log::info;
 use notify_debouncer_mini::{notify::RecursiveMode, DebounceEventResult};
 use tower_livereload::LiveReloadLayer;
 
@@ -27,12 +28,15 @@ use std::{
 use self::error::Error;
 use crate::template::{TemplateName, TEMPLATE};
 
+// TODO: put back
+// static APP_CSS: &str = include_str!("../static/app.css");
+
 #[derive(Clone)]
 struct AppState {
     root_dir: PathBuf,
 }
 
-pub struct Args {
+pub struct ServerArgs {
     pub root_dir: PathBuf,
     pub port: u16,
     pub open: bool,
@@ -110,6 +114,18 @@ async fn path(
     Ok(static_path(path_to_serve).into_response())
 }
 
+async fn serve_internal_css() -> impl IntoResponse {
+    let mut headers = http::HeaderMap::new();
+    headers.insert(header::CONTENT_TYPE, "text/css".parse().unwrap());
+
+    // TODO: put back
+    // (headers, APP_CSS)
+    //
+
+    // FIXME: REMOVE
+    (headers, std::fs::read_to_string("static/app.css").unwrap())
+}
+
 fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Error> {
     let root = canonicalize(root_dir)?;
 
@@ -165,7 +181,11 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
     }
 }
 
-pub async fn start(args: Args) -> Result<()> {
+pub async fn start(args: ServerArgs) -> Result<()> {
+    if args.open {
+        open::that(format!("http://localhost:{}", args.port))?;
+    }
+
     let state = AppState {
         root_dir: args.root_dir.clone(),
     };
@@ -174,17 +194,10 @@ pub async fn start(args: Args) -> Result<()> {
     let reloader = livereload.reloader();
 
     let mut debouncer = notify_debouncer_mini::new_debouncer(
-        Duration::from_millis(90),
+        Duration::from_millis(80),
         None,
-        move |res: DebounceEventResult| match res {
-            Ok(events) => events.iter().for_each(|event| {
-                info!("Reloading {} ...", event.path.to_string_lossy());
-                reloader.reload()
-            }),
-
-            Err(errors) => errors
-                .iter()
-                .for_each(|error| error!("Watcher Error {error:?}")),
+        move |event: DebounceEventResult| {
+            let _ = reload::handle_reload(event, &reloader);
         },
     )
     .unwrap();
@@ -195,6 +208,10 @@ pub async fn start(args: Args) -> Result<()> {
 
     let app = Router::new()
         .route("/", get(root))
+        .route(
+            "/__internal_only_easywind_css_file__.css",
+            get(serve_internal_css),
+        )
         .route("/*path", get(path))
         .with_state(state.clone())
         .layer(livereload)

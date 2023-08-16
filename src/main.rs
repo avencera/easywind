@@ -39,8 +39,16 @@ pub(crate) struct StartArgs {
     pub port: u16,
 
     /// Open in your browser
-    #[clap(short, long)]
+    #[clap(short = 'O', long)]
     pub open: bool,
+
+    /// Input css file to process
+    #[clap(short, long, default_value = "src/styles.css")]
+    pub input: PathBuf,
+
+    /// Where you want the final CSS file to be written
+    #[clap(short, long, default_value = "dest/app.css")]
+    pub output: PathBuf,
 }
 
 #[derive(Parser, Debug, Clone)]
@@ -59,16 +67,23 @@ pub(crate) struct ServerArgs {
 
 #[derive(Parser, Debug, Clone)]
 pub(crate) struct TailwindArgs {
+    /// Path to the root directory of the project. This is where the `tailwind.config.js` file is located.
+    ///
+    /// Defaults to the current directory
     #[clap(default_value = ".")]
     pub root_dir: PathBuf,
 
-    /// Port the server shoud use, defaults to 3500
-    #[clap(short, long, default_value = "3500")]
-    pub port: u16,
+    /// Input css file to process
+    #[clap(short, long, default_value = "src/styles.css")]
+    pub input: PathBuf,
 
-    /// Open in your browser
+    /// Where you want the final CSS file to be written
+    #[clap(short, long, default_value = "dest/app.css")]
+    pub output: PathBuf,
+
+    /// Watch for changes in input CSS and recompile the output CSS
     #[clap(short, long)]
-    pub open: bool,
+    pub watch: bool,
 }
 
 #[tokio::main]
@@ -86,16 +101,12 @@ async fn main() -> Result<()> {
         CliArgs {
             command: Commands::Server(args),
         } => {
-            if args.open {
-                open::that(format!("http://localhost:{}", args.port))?;
-            }
-
             easywind::server::start(args.into()).await?;
         }
         CliArgs {
             command: Commands::Tailwind(args),
         } => {
-            easywind::tailwind::start(args.into()).await?;
+            easywind::tailwind::start(args.into())?;
         }
     }
 
