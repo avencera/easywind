@@ -28,8 +28,7 @@ use std::{
 use self::error::Error;
 use crate::template::{TemplateName, TEMPLATE};
 
-// TODO: put back
-// static APP_CSS: &str = include_str!("../static/app.css");
+static APP_CSS: &str = include_str!("../static/app.css");
 
 #[derive(Clone)]
 struct AppState {
@@ -118,12 +117,7 @@ async fn serve_internal_css() -> impl IntoResponse {
     let mut headers = http::HeaderMap::new();
     headers.insert(header::CONTENT_TYPE, "text/css".parse().unwrap());
 
-    // TODO: put back
-    // (headers, APP_CSS)
-    //
-
-    // FIXME: REMOVE
-    (headers, std::fs::read_to_string("static/app.css").unwrap())
+    (headers, APP_CSS)
 }
 
 fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Error> {
