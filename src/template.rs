@@ -88,7 +88,7 @@ pub static TEMPLATE: Lazy<Template> = Lazy::new(|| {
     let mut template = Template::new();
 
     for (name, file) in TEMPLATE_FILES.iter() {
-        template = template.add_new(*name, *file);
+        template = template.add_new(*name, file);
     }
 
     template
