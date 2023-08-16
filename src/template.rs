@@ -12,13 +12,17 @@ use strum::IntoEnumIterator;
 pub enum TemplateName {
     Index,
     ProjectIndex,
+    ProjectCss,
+    TailwindConfig,
 }
 
 impl From<TemplateName> for &'static str {
     fn from(template: TemplateName) -> Self {
         match template {
-            TemplateName::Index => "index",
-            TemplateName::ProjectIndex => "project_index",
+            TemplateName::Index => "index.html",
+            TemplateName::ProjectIndex => "project_index.html",
+            TemplateName::TailwindConfig => "tailwind.config.js",
+            TemplateName::ProjectCss => "project_app_css.css",
         }
     }
 }
@@ -65,7 +69,7 @@ pub static TEMPLATE_FILES: Lazy<HashMap<TemplateName, &str>> = Lazy::new(|| {
 
     for template in TemplateName::iter() {
         let template_name: &str = template.into();
-        let file_name = format!("{}.html.j2", template_name);
+        let file_name = format!("{}.j2", template_name);
 
         let file = TEMPLATES_DIR
             .get_file(file_name)

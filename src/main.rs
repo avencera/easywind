@@ -92,7 +92,7 @@ pub(crate) struct TailwindArgs {
     pub input: PathBuf,
 
     /// Where you want the final CSS file to be written
-    #[clap(short, long, default_value = "dest/app.css")]
+    #[clap(short, long, default_value = "dist/app.css")]
     pub output: PathBuf,
 
     /// Watch for changes in input CSS and recompile the output CSS
