@@ -129,17 +129,38 @@ async fn serve_internal_css() -> impl IntoResponse {
 fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Error> {
     let root = canonicalize(root_dir)?;
 
-    let paths: Vec<PathBuf> = std::fs::read_dir(path)?
+    let mut current_dir = path
+        .strip_prefix(&root)
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_default();
+    current_dir.push('/');
+
+    let paths: Vec<PathBuf> = std::fs::read_dir(&path)?
         .filter_map(Result::ok)
         .map(|dir_entry| dir_entry.path())
         .collect::<Vec<_>>();
 
-    let links = paths
+    let mut links = paths
         .into_iter()
-        .filter_map(|path| Some(path.strip_prefix(&root).ok()?.to_string_lossy().to_string()))
+        .filter_map(|path| {
+            Some((
+                path.is_dir(),
+                path.strip_prefix(&root).ok()?.to_string_lossy().to_string(),
+            ))
+        })
         .collect::<Vec<_>>();
 
-    let ctx: minijinja::Value = minijinja::context! {links => links};
+    links.sort_by(|(is_dir_a, path_a), (is_dir_b, path_b)| {
+        if *is_dir_a == *is_dir_b {
+            path_a.cmp(path_b)
+        } else if *is_dir_a {
+            std::cmp::Ordering::Less
+        } else {
+            std::cmp::Ordering::Greater
+        }
+    });
+
+    let ctx: minijinja::Value = minijinja::context! {links => links, current_dir => current_dir};
     let template = TEMPLATE.render(TemplateName::Index, &ctx);
 
     Ok(template.into())

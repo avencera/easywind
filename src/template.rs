@@ -18,6 +18,12 @@ pub struct Template<'a> {
     env: Environment<'a>,
 }
 
+impl Default for Template<'_> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(not(feature = "dev"))]
 impl Template<'_> {
     pub fn new() -> Self {
@@ -52,12 +58,6 @@ pub static TEMPLATE: Lazy<Template> =
 #[cfg(feature = "dev")]
 pub struct Template<'a> {
     env: std::sync::Mutex<Environment<'a>>,
-}
-
-impl Default for Template<'_> {
-    fn default() -> Self {
-        Self::new()
-    }
 }
 
 #[cfg(feature = "dev")]
