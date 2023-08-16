@@ -1,6 +1,7 @@
-use std::path::PathBuf;
-
 use eyre::Result;
+use futures::{stream::FuturesUnordered, StreamExt};
+use std::path::PathBuf;
+use tokio::task::JoinHandle;
 
 #[derive(Debug, Clone)]
 pub struct StartArgs {
@@ -43,7 +44,16 @@ pub async fn start(args: StartArgs) -> Result<()> {
     let tailwind_args: crate::tailwind::TailwindArgs = args.into();
     let tailwind_task = tokio::task::spawn(async move { crate::tailwind::start(tailwind_args) });
 
-    let _ = tokio::try_join!(server_task, tailwind_task)?;
+    let tasks = vec![tailwind_task, server_task];
+
+    let mut futures = tasks
+        .into_iter()
+        .collect::<FuturesUnordered<JoinHandle<_>>>();
+
+    // return on first errror
+    if let Some(Ok(Err(err))) = futures.next().await {
+        return Err(err);
+    };
 
     Ok(())
 }
