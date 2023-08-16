@@ -90,10 +90,7 @@ impl Template<'_> {
 #[cfg(feature = "dev")]
 pub static TEMPLATE: Lazy<Template> = Lazy::new(|| {
     Template::new().set_loader(move |name| match name {
-        "index" => {
-            log::info!("loading index");
-            Ok(std::fs::read_to_string("templates/index.html.j2").ok())
-        }
+        "index" => Ok(std::fs::read_to_string("templates/index.html.j2").ok()),
         other => panic!("only index is allowed, not {}", other),
     })
 });

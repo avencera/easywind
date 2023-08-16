@@ -1,12 +1,12 @@
-use std::process::Output;
+use std::io::{BufRead, BufReader};
 
 use eyre::{eyre, Context, Result};
 
 use super::TailwindArgs;
 
-pub fn init() -> Result<Output> {
-    let output = tailwind(&["init"])?;
-    Ok(output)
+pub fn init() -> Result<()> {
+    tailwind(&["init"])?;
+    Ok(())
 }
 
 pub fn watch(args: TailwindArgs) -> Result<()> {
@@ -42,6 +42,15 @@ pub fn build(args: TailwindArgs) -> Result<()> {
     Ok(())
 }
 
-pub fn tailwind(args: &[&str]) -> Result<Output, std::io::Error> {
-    duct::cmd("npx", ["tailwind"].iter().chain(args)).run()
+pub fn tailwind(args: &[&str]) -> Result<(), std::io::Error> {
+    let reader = duct::cmd("npx", ["tailwind"].iter().chain(args))
+        .stderr_to_stdout()
+        .stdout_capture()
+        .reader()?;
+
+    for line in BufReader::new(reader).lines() {
+        log::info!("{}", line?);
+    }
+
+    Ok(())
 }
