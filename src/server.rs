@@ -233,7 +233,7 @@ pub async fn start(args: ServerArgs) -> Result<()> {
         .layer(no_cache::layer());
 
     let port = port::default_or_available(args.port).expect("Unable to find available port");
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
 
     info!("Serving html from {}", state.root_dir.to_string_lossy());
     info!("Starting server at {}", addr);
