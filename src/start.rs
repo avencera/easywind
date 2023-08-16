@@ -8,8 +8,8 @@ pub struct StartArgs {
     pub root_dir: PathBuf,
     pub port: u16,
     pub open: bool,
-    pub input: Option<PathBuf>,
-    pub output: Option<PathBuf>,
+    pub input: PathBuf,
+    pub output: PathBuf,
 }
 
 impl From<StartArgs> for crate::server::ServerArgs {
@@ -24,14 +24,10 @@ impl From<StartArgs> for crate::server::ServerArgs {
 
 impl From<StartArgs> for crate::tailwind::TailwindArgs {
     fn from(args: StartArgs) -> Self {
-        let root_dir = args.root_dir;
-        let input = args.input.unwrap_or_else(|| PathBuf::from("src/app.css"));
-        let output = args.output.unwrap_or_else(|| PathBuf::from("dist/app.css"));
-
         Self {
-            root_dir,
-            input,
-            output,
+            root_dir: args.root_dir,
+            input: args.input,
+            output: args.output,
             watch: true,
         }
     }
