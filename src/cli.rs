@@ -21,8 +21,14 @@ impl From<TailwindArgs> for easywind::tailwind::TailwindArgs {
     }
 }
 
-impl From<StartArgs> for easywind::start::Args {
-    fn from(_args: StartArgs) -> Self {
-        Self {}
+impl From<StartArgs> for easywind::start::StartArgs {
+    fn from(args: StartArgs) -> Self {
+        Self {
+            root_dir: args.root_dir,
+            port: args.port,
+            open: args.open,
+            input: args.input,
+            output: args.output,
+        }
     }
 }

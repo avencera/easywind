@@ -39,8 +39,16 @@ pub(crate) struct StartArgs {
     pub port: u16,
 
     /// Open in your browser
-    #[clap(short, long)]
+    #[clap(short = 'O', long)]
     pub open: bool,
+
+    /// Input css file to process
+    #[clap(short, long, default_value = "src/styles.css")]
+    pub input: PathBuf,
+
+    /// Where you want the final CSS file to be written
+    #[clap(short, long, default_value = "dest/app.css")]
+    pub output: PathBuf,
 }
 
 #[derive(Parser, Debug, Clone)]
@@ -93,10 +101,6 @@ async fn main() -> Result<()> {
         CliArgs {
             command: Commands::Server(args),
         } => {
-            if args.open {
-                open::that(format!("http://localhost:{}", args.port))?;
-            }
-
             easywind::server::start(args.into()).await?;
         }
         CliArgs {

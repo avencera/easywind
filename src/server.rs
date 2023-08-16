@@ -182,6 +182,10 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
 }
 
 pub async fn start(args: ServerArgs) -> Result<()> {
+    if args.open {
+        open::that(format!("http://localhost:{}", args.port))?;
+    }
+
     let state = AppState {
         root_dir: args.root_dir.clone(),
     };
