@@ -292,6 +292,7 @@ dependencies = [
 name = "easywind"
 version = "0.1.0"
 dependencies = [
+ "anstyle",
  "axum",
  "clap",
  "color-eyre",

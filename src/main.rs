@@ -9,6 +9,7 @@ use eyre::Result;
 #[derive(Debug, Parser)]
 #[command(display_name = "EasyWind", author, version, about)]
 #[command(arg_required_else_help(true))]
+#[command(styles=cli::get_styles())]
 pub struct CliArgs {
     #[command(subcommand)]
     command: Commands,
