@@ -10,9 +10,14 @@ impl From<ServerArgs> for easywind::server::Args {
     }
 }
 
-impl From<TailwindArgs> for easywind::tailwind::Args {
-    fn from(_args: TailwindArgs) -> Self {
-        Self {}
+impl From<TailwindArgs> for easywind::tailwind::TailwindArgs {
+    fn from(args: TailwindArgs) -> Self {
+        Self {
+            root_dir: args.root_dir,
+            input: args.input,
+            output: args.output,
+            watch: args.watch,
+        }
     }
 }
 
