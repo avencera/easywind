@@ -5,6 +5,9 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+dev = ["minijinja/loader"]
+
 [dependencies]
 # async 
 futures-lite = "1.13"
