@@ -12,7 +12,7 @@ use axum::{
     Router,
 };
 use eyre::Result;
-use log::info;
+use log::{error, info};
 use notify_debouncer_mini::{notify::RecursiveMode, DebounceEventResult};
 use tower_livereload::LiveReloadLayer;
 
@@ -203,7 +203,12 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
 
 pub async fn start(args: ServerArgs) -> Result<()> {
     if args.open {
-        open::that(format!("http://localhost:{}", args.port))?;
+        tokio::task::spawn(async move {
+            tokio::time::sleep(Duration::from_millis(60)).await;
+            if let Err(error) = open::that(format!("http://localhost:{}", args.port)) {
+                error!("Unable to open browser: {error:?}");
+            }
+        });
     }
 
     let state = AppState {
