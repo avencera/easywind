@@ -36,7 +36,7 @@ struct AppState {
     root_dir: PathBuf,
 }
 
-pub struct Args {
+pub struct ServerArgs {
     pub root_dir: PathBuf,
     pub port: u16,
     pub open: bool,
@@ -181,7 +181,7 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
     }
 }
 
-pub async fn start(args: Args) -> Result<()> {
+pub async fn start(args: ServerArgs) -> Result<()> {
     let state = AppState {
         root_dir: args.root_dir.clone(),
     };

@@ -1,6 +1,6 @@
 use crate::{ServerArgs, StartArgs, TailwindArgs};
 
-impl From<ServerArgs> for easywind::server::Args {
+impl From<ServerArgs> for easywind::server::ServerArgs {
     fn from(args: ServerArgs) -> Self {
         Self {
             root_dir: args.root_dir,
