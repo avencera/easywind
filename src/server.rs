@@ -204,7 +204,7 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
 pub async fn start(args: ServerArgs) -> Result<()> {
     if args.open {
         tokio::task::spawn(async move {
-            tokio::time::sleep(Duration::from_millis(60)).await;
+            tokio::time::sleep(Duration::from_millis(200)).await;
             if let Err(error) = open::that(format!("http://localhost:{}", args.port)) {
                 error!("Unable to open browser: {error:?}");
             }

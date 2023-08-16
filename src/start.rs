@@ -25,8 +25,8 @@ impl From<StartArgs> for crate::server::ServerArgs {
 impl From<StartArgs> for crate::tailwind::TailwindArgs {
     fn from(args: StartArgs) -> Self {
         let root_dir = args.root_dir;
-        let input = args.input.unwrap_or_else(|| root_dir.join("src/app.css"));
-        let output = args.output.unwrap_or_else(|| root_dir.join("dist/app.css"));
+        let input = args.input.unwrap_or_else(|| PathBuf::from("src/app.css"));
+        let output = args.output.unwrap_or_else(|| PathBuf::from("dist/app.css"));
 
         Self {
             root_dir,

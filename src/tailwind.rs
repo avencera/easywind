@@ -17,10 +17,11 @@ pub fn start(args: TailwindArgs) -> Result<()> {
         return Err(eyre!("input and output files cannot be the same"));
     }
 
-    if !args.input.exists() {
+    let input_file = &args.root_dir.join(&args.input);
+    if !input_file.exists() {
         return Err(eyre!(
             "input file ({}) does not exist",
-            args.input.to_str().unwrap_or_default()
+            input_file.to_str().unwrap_or_default()
         ));
     }
 

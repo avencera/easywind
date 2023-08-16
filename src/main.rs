@@ -5,6 +5,7 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 use eyre::Result;
+use pretty_env_logger::env_logger::Env;
 
 #[derive(Debug, Parser)]
 #[command(display_name = "EasyWind", author, version, about)]
@@ -103,7 +104,9 @@ pub(crate) struct TailwindArgs {
 #[tokio::main]
 async fn main() -> Result<()> {
     // initialize logging
-    pretty_env_logger::init();
+    let env = Env::new().filter_or("LOG_LEVEL", "info");
+
+    pretty_env_logger::env_logger::init_from_env(env);
 
     // pretty errors
     color_eyre::install()?;
