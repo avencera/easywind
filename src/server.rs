@@ -28,6 +28,7 @@ use std::{
 use self::error::Error;
 use crate::template::{TemplateName, TEMPLATE};
 
+#[cfg(not(feature = "dev"))]
 static APP_CSS: &str = include_str!("../static/app.css");
 
 #[derive(Clone)]
@@ -117,6 +118,10 @@ async fn serve_internal_css() -> impl IntoResponse {
     let mut headers = http::HeaderMap::new();
     headers.insert(header::CONTENT_TYPE, "text/css".parse().unwrap());
 
+    #[cfg(feature = "dev")]
+    return (headers, std::fs::read_to_string("static/app.css").unwrap());
+
+    #[cfg(not(feature = "dev"))]
     (headers, APP_CSS)
 }
 
