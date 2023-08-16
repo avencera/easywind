@@ -27,6 +27,8 @@ use std::{
 use self::error::Error;
 use crate::template::{TemplateName, TEMPLATE};
 
+static APP_CSS: &str = include_str!("../static/app.css");
+
 #[derive(Clone)]
 struct AppState {
     root_dir: PathBuf,
@@ -108,6 +110,18 @@ async fn path(
 
     // any other file, create response depending on mime type
     Ok(static_path(path_to_serve).into_response())
+}
+
+async fn serve_internal_css() -> impl IntoResponse {
+    let mut headers = http::HeaderMap::new();
+    headers.insert(header::CONTENT_TYPE, "text/css".parse().unwrap());
+
+    // TODO: put back
+    // (headers, APP_CSS)
+    //
+
+    // FIXME: REMOVE
+    (headers, std::fs::read_to_string("static/app.css").unwrap())
 }
 
 fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Error> {
@@ -195,6 +209,10 @@ pub async fn start(args: Args) -> Result<()> {
 
     let app = Router::new()
         .route("/", get(root))
+        .route(
+            "/__internal_only_easywind_css_file__.css",
+            get(serve_internal_css),
+        )
         .route("/*path", get(path))
         .with_state(state.clone())
         .layer(livereload)
