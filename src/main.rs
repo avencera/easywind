@@ -57,11 +57,11 @@ pub(crate) struct StartArgs {
     pub open: bool,
 
     /// Input css file to process
-    #[clap(short, long, default_value = "src/styles.css")]
+    #[clap(short, long, default_value = "src/app.css")]
     pub input: PathBuf,
 
     /// Where you want the final CSS file to be written
-    #[clap(short, long, default_value = "dest/app.css")]
+    #[clap(short, long, default_value = "dist/app.css")]
     pub output: PathBuf,
 }
 
