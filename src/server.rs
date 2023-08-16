@@ -1,6 +1,7 @@
 pub mod error;
 pub mod no_cache;
 pub mod port;
+pub mod reload;
 
 use axum::{
     body::{self, Empty, Full},
@@ -11,7 +12,7 @@ use axum::{
     Router,
 };
 use eyre::Result;
-use log::{error, info};
+use log::info;
 use notify_debouncer_mini::{notify::RecursiveMode, DebounceEventResult};
 use tower_livereload::LiveReloadLayer;
 
@@ -27,7 +28,8 @@ use std::{
 use self::error::Error;
 use crate::template::{TemplateName, TEMPLATE};
 
-static APP_CSS: &str = include_str!("../static/app.css");
+// TODO: put back
+// static APP_CSS: &str = include_str!("../static/app.css");
 
 #[derive(Clone)]
 struct AppState {
@@ -188,17 +190,10 @@ pub async fn start(args: Args) -> Result<()> {
     let reloader = livereload.reloader();
 
     let mut debouncer = notify_debouncer_mini::new_debouncer(
-        Duration::from_millis(90),
+        Duration::from_millis(80),
         None,
-        move |res: DebounceEventResult| match res {
-            Ok(events) => events.iter().for_each(|event| {
-                info!("Reloading {} ...", event.path.to_string_lossy());
-                reloader.reload()
-            }),
-
-            Err(errors) => errors
-                .iter()
-                .for_each(|error| error!("Watcher Error {error:?}")),
+        move |event: DebounceEventResult| {
+            let _ = reload::handle_reload(event, &reloader);
         },
     )
     .unwrap();
