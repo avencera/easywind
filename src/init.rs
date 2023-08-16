@@ -1,4 +1,5 @@
 use eyre::{eyre, Result};
+use log::info;
 
 use crate::{
     template::{TemplateName, TEMPLATE},
@@ -35,6 +36,9 @@ pub fn run(args: InitArgs) -> Result<()> {
     let template = TEMPLATE.render(TemplateName::ProjectCss, &ctx);
     let file_path = format!("{}/src/app.css", args.project_name);
     std::fs::write(file_path, template)?;
+
+    info!("Created project {}", args.project_name);
+    info!("Run `easywind start {}` to get to work", args.project_name);
 
     Ok(())
 }
