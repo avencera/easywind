@@ -42,7 +42,7 @@ pub async fn start(args: StartArgs) -> Result<()> {
     let server_task = tokio::task::spawn(async move { crate::server::start(server_args).await });
 
     let tailwind_args: crate::tailwind::TailwindArgs = args.into();
-    let tailwind_task = tokio::task::spawn(async move { crate::tailwind::start(tailwind_args) });
+    let tailwind_task = tokio::task::spawn_blocking(|| crate::tailwind::start(tailwind_args));
 
     let tasks = vec![tailwind_task, server_task];
 
