@@ -5,6 +5,8 @@ use std::{
 
 use eyre::{eyre, Context, Result};
 
+use crate::{consts::TAILWIND_CLI_PATH, validate};
+
 use super::TailwindArgs;
 
 pub fn watch(args: TailwindArgs) -> Result<()> {
@@ -48,7 +50,13 @@ fn base_args(args: &TailwindArgs) -> Result<Vec<&str>> {
 }
 
 pub fn tailwind(args: &[&str], root_dir: &PathBuf) -> Result<(), std::io::Error> {
-    let reader = duct::cmd("npx", ["tailwind"].iter().chain(args))
+    let tailwind = if validate::check_node_deps().is_ok() {
+        duct::cmd("npx", ["tailwind"].iter().chain(args))
+    } else {
+        duct::cmd(TAILWIND_CLI_PATH.as_os_str(), args)
+    };
+
+    let reader = tailwind
         .stderr_to_stdout()
         .stdout_capture()
         .dir(root_dir)

@@ -1,3 +1,4 @@
+use color_eyre::Help;
 use eyre::{eyre, Context, Result};
 use log::{info, warn};
 use std::os::unix::prelude::PermissionsExt;
@@ -99,6 +100,11 @@ fn check_or_install_tailwind() -> Result<()> {
     info!("Making tailwind cli executable");
     let mut perms = TAILWIND_CLI_PATH.metadata()?.permissions();
     perms.set_mode(0o755);
+
+    std::fs::set_permissions(TAILWIND_CLI_PATH.as_path(), perms)
+        .wrap_err("Unable to make Tailwind CLI executable")
+        .suggestion("Please install node from nodejs and try again")
+        .suggestion("Go to: https://nodejs.org/en/download")?;
 
     Ok(())
 }
