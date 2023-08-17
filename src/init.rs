@@ -37,6 +37,10 @@ pub fn run(args: InitArgs) -> Result<()> {
     let file_path = format!("{}/src/app.css", args.project_name);
     std::fs::write(file_path, template)?;
 
+    // dist/app.css
+    let file_path = format!("{}/dist/app.css", args.project_name);
+    std::fs::write(file_path, "")?;
+
     info!("Created project {}", args.project_name);
     info!("Run `easywind start {}` to get to work", args.project_name);
 
