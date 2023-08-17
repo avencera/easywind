@@ -23,6 +23,7 @@ axum = "0.6.20"
 tower-http = { version = "0.4", features = ["fs", "set-header"] }
 tower = "0.4.13"
 http = "0.2.9"
+ureq = "2.7.1"
 
 # livereload
 tower-livereload = { version = "0.8"}
@@ -43,6 +44,9 @@ once_cell = "1.18.0"
 # external clis
 duct = "0.13.6"
 which = "4.4.0"
+
+# config / download dir
+etcetera = "0.8.0"
 
 # cli only
 clap = { version = "4.3.21", features = ["derive", "unstable-styles"] }

@@ -36,7 +36,7 @@ impl TryFrom<StartArgs> for crate::tailwind::TailwindArgs {
             .suggestion("Try running `easywind init` to create a new project")
             .suggestion("Try setting the location of your input file with `--input` flag")?;
 
-        if let Err(_) = std::fs::canonicalize(&output) {
+        if std::fs::canonicalize(&output).is_err() {
             std::fs::write(&output, "")
                 .wrap_err_with(|| {
                     format!(
