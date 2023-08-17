@@ -2,6 +2,7 @@ pub mod cli;
 
 use std::path::PathBuf;
 
+use color_eyre::Help;
 use eyre::{eyre, Result};
 
 #[derive(Debug, Clone)]
@@ -22,7 +23,9 @@ pub fn start(args: TailwindArgs) -> Result<()> {
         return Err(eyre!(
             "input file ({}) does not exist",
             input_file.to_str().unwrap_or_default()
-        ));
+        ))
+        .suggestion("Try running `easywind init` to create a new project")
+        .suggestion("Try setting the location of your input file with `--input` flag");
     }
 
     if args.watch {

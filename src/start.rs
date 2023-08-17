@@ -1,4 +1,5 @@
-use eyre::Result;
+use color_eyre::Help;
+use eyre::{Context, Result};
 use futures::{stream::FuturesUnordered, StreamExt};
 use std::path::PathBuf;
 use tokio::task::JoinHandle;
@@ -22,18 +23,37 @@ impl From<StartArgs> for crate::server::ServerArgs {
     }
 }
 
-impl From<StartArgs> for crate::tailwind::TailwindArgs {
-    fn from(args: StartArgs) -> Self {
+impl TryFrom<StartArgs> for crate::tailwind::TailwindArgs {
+    type Error = color_eyre::Report;
+
+    fn try_from(args: StartArgs) -> Result<Self, Self::Error> {
         let root_dir = args.root_dir;
         let input = args.input.unwrap_or_else(|| root_dir.join("src/app.css"));
         let output = args.output.unwrap_or_else(|| root_dir.join("dist/app.css"));
 
-        Self {
-            root_dir,
-            input: std::fs::canonicalize(input).expect("Unable to canonicalize input file"),
-            output: std::fs::canonicalize(output).expect("Unable to canonicalize output file"),
-            watch: true,
+        let input = std::fs::canonicalize(&input)
+            .wrap_err_with(|| format!("Unable to find input file: {}", input.to_string_lossy()))
+            .suggestion("Try running `easywind init` to create a new project")
+            .suggestion("Try setting the location of your input file with `--input` flag")?;
+
+        if let Err(_) = std::fs::canonicalize(&output) {
+            std::fs::write(&output, "")
+                .wrap_err_with(|| {
+                    format!(
+                        "Unable to create empty output file at: {}",
+                        output.to_string_lossy()
+                    )
+                })
+                .suggestion("Make sure the directory of the output file exists")
+                .suggestion("Try setting a different output file location with `--output` flag")?;
         }
+
+        Ok(Self {
+            root_dir,
+            input,
+            output,
+            watch: true,
+        })
     }
 }
 
@@ -41,7 +61,7 @@ pub async fn start(args: StartArgs) -> Result<()> {
     let server_args: crate::server::ServerArgs = args.clone().into();
     let server_task = tokio::task::spawn(async move { crate::server::start(server_args).await });
 
-    let tailwind_args: crate::tailwind::TailwindArgs = args.into();
+    let tailwind_args: crate::tailwind::TailwindArgs = args.try_into()?;
     let tailwind_task = tokio::task::spawn_blocking(|| crate::tailwind::start(tailwind_args));
 
     let tasks = vec![tailwind_task, server_task];
