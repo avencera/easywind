@@ -1,7 +1,6 @@
 use color_eyre::Help;
 use eyre::{eyre, Context, Result};
 use log::{info, warn};
-use std::os::unix::prelude::PermissionsExt;
 
 use crate::{
     consts::{LATEST_TAILWIND_VERSION, TAILWIND_BIN_DIR, TAILWIND_CLI_PATH},
@@ -96,15 +95,9 @@ fn check_or_install_tailwind() -> Result<()> {
     download_tailwind_cli()?;
     info!("Successfully downloaded tailwind cli");
 
-    // make cli executable
-    info!("Making tailwind cli executable");
-    let mut perms = TAILWIND_CLI_PATH.metadata()?.permissions();
-    perms.set_mode(0o755);
-
-    std::fs::set_permissions(TAILWIND_CLI_PATH.as_path(), perms)
-        .wrap_err("Unable to make Tailwind CLI executable")
-        .suggestion("Please install node from nodejs and try again")
-        .suggestion("Go to: https://nodejs.org/en/download")?;
+    // make cli executable on unix
+    #[cfg(unix)]
+    make_tailwind_cli_executable()?;
 
     Ok(())
 }
@@ -143,4 +136,19 @@ fn get_arch() -> Result<&'static str> {
         "arm" => Ok("armv7"),
         _ => Err(eyre!("Unsupported architecture: {}", arch)),
     }
+}
+
+fn make_tailwind_cli_executable() -> Result<()> {
+    use std::os::unix::prelude::PermissionsExt;
+
+    info!("Making tailwind cli executable");
+    let mut perms = TAILWIND_CLI_PATH.metadata()?.permissions();
+    perms.set_mode(0o755);
+
+    std::fs::set_permissions(TAILWIND_CLI_PATH.as_path(), perms)
+        .wrap_err("Unable to make Tailwind CLI executable")
+        .suggestion("Please install node from nodejs and try again")
+        .suggestion("Go to: https://nodejs.org/en/download")?;
+
+    Ok(())
 }
