@@ -19,15 +19,15 @@ pub struct CliArgs {
 #[derive(Debug, Subcommand)]
 enum Commands {
     /// Initialize a new project
-    #[command(visible_aliases = ["i"])]
+    #[command(visible_aliases = ["new", "i"])]
     Init(InitArgs),
 
     /// Start the server and tailwind watcher
-    #[command(visible_aliases = ["s"])]
+    #[command(visible_aliases = ["run", "s"])]
     Start(StartArgs),
 
     /// Run a live reloading server to serve content
-    #[command(name = "serve", visible_aliases = ["server"])]
+    #[command(name = "serve")]
     Server(ServerArgs),
 
     /// Run the tailwind watcher that generates the CSS
