@@ -105,7 +105,6 @@ pub(crate) struct TailwindArgs {
 async fn main() -> Result<()> {
     // initialize logging
     let env = Env::new().filter_or("LOG_LEVEL", "info");
-
     pretty_env_logger::env_logger::init_from_env(env);
 
     // pretty errors
