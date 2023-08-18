@@ -1,4 +1,4 @@
-# EasyWind - The easiest way to get started with Tailwind
+# EasyWind
 
 ## Install
 
