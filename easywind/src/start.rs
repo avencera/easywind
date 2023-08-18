@@ -33,10 +33,22 @@ impl TryFrom<StartArgs> for crate::tailwind::TailwindArgs {
 
         let input = std::fs::canonicalize(&input)
             .wrap_err_with(|| format!("Unable to find input file: {}", input.to_string_lossy()))
-            .with_suggestion(|| format!("Try running `easywind init {}` to create a new project", root_dir.display()))
+            .with_suggestion(|| {
+                format!(
+                    "Try running `easywind init {}` to create a new project",
+                    root_dir.display()
+                )
+            })
             .suggestion("Try setting the location of your input file with `--input` flag")?;
 
         if std::fs::canonicalize(&output).is_err() {
+            std::fs::create_dir_all(root_dir.join("dist")).wrap_err_with(|| {
+                format!(
+                    "Unable to create output directory at: {}",
+                    root_dir.join("dist").display()
+                )
+            })?;
+
             std::fs::write(&output, "")
                 .wrap_err_with(|| {
                     format!(
@@ -47,6 +59,16 @@ impl TryFrom<StartArgs> for crate::tailwind::TailwindArgs {
                 .suggestion("Make sure the directory of the output file exists")
                 .suggestion("Try setting a different output file location with `--output` flag")?;
         }
+
+        let output = std::fs::canonicalize(&output)
+            .wrap_err_with(|| format!("Unable to find output file: {}", output.to_string_lossy()))
+            .with_suggestion(|| {
+                format!(
+                    "Try running `easywind init {}` to create a new project",
+                    root_dir.display()
+                )
+            })
+            .suggestion("Try setting the location of your output file with `--output` flag")?;
 
         Ok(Self {
             root_dir,
