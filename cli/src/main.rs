@@ -8,7 +8,7 @@ use eyre::Result;
 use pretty_env_logger::env_logger::Env;
 
 #[derive(Debug, Parser)]
-#[command(display_name = "EasyWind", author, version, about)]
+#[command(display_name = "EasyWind", author, version)]
 #[command(arg_required_else_help(true))]
 #[command(styles=cli::get_styles())]
 pub struct CliArgs {
