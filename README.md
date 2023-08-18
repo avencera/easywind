@@ -31,10 +31,7 @@ You only need to commands to get started (no dependencies not even node):
 
 `easywind start mywebsite --open` will start the tailwind watcher and a live reloading server
 
-
-https://github.com/avencera/easywind/assets/1775346/91b2b627-4bf8-4fbd-a2ba-2345167d4a24
-
-
+https://github.com/avencera/easywind/assets/1775346/adf34522-404f-49d0-8fa3-2ac0d4731e05
 
 ### easywind init
 
