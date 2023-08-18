@@ -61,7 +61,8 @@ impl Template<'_> {
 }
 
 #[cfg(not(feature = "dev"))]
-static TEMPLATES_DIR: include_dir::Dir<'_> = include_dir::include_dir!("./easywind/templates");
+static TEMPLATES_DIR: include_dir::Dir<'_> =
+    include_dir::include_dir!("$CARGO_MANIFEST_DIR/templates");
 
 #[cfg(not(feature = "dev"))]
 pub static TEMPLATE_FILES: Lazy<HashMap<TemplateName, &str>> = Lazy::new(|| {
