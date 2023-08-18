@@ -1,9 +1,15 @@
 [package]
+authors = ["Praveen Perera <praveen@avencera.com>"]
 name = "easywind"
-version = "0.1.0"
-edition = "2021"
-license = "Apache-2.0"
 description = "EasyWind CLI library"
+
+version = "0.1.1"
+edition = "2021"
+
+license = "Apache-2.0"
+repository = "https://github.com/avencera/easywind"
+homepage = "https://github.com/avencera/easywind"
+documentation = "https://docs.rs/easywind"
 
 [features]
 dev = ["minijinja/loader"]
@@ -11,7 +17,7 @@ dev = ["minijinja/loader"]
 [dependencies]
 # async 
 futures = "0.3.28"
-tokio = {version = "1.30", features = ["rt-multi-thread", "macros"]}
+tokio = {version = "1.32", features = ["rt-multi-thread", "macros"]}
 
 # error handling
 color-eyre = "0.6"
