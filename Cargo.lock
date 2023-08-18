@@ -319,9 +319,7 @@ dependencies = [
 name = "easywind"
 version = "0.1.0"
 dependencies = [
- "anstyle",
  "axum",
- "clap",
  "color-eyre",
  "duct",
  "etcetera",
@@ -344,6 +342,21 @@ dependencies = [
  "tower-livereload",
  "ureq",
  "which",
+]
+
+[[package]]
+name = "easywind_cli"
+version = "0.1.0"
+dependencies = [
+ "anstyle",
+ "clap",
+ "color-eyre",
+ "easywind",
+ "eyre",
+ "futures",
+ "log",
+ "pretty_env_logger",
+ "tokio",
 ]
 
 [[package]]
