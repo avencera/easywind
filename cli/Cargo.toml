@@ -8,7 +8,7 @@ description  = "EasyWind - The easiest way to get started with Tailwind CSS"
 
 [dependencies]
 # workspace
-easywind = { path = "../easywind" }
+easywind = "0.1.0"
 
 # async 
 futures = "0.3.28"
