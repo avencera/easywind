@@ -33,7 +33,7 @@ impl TryFrom<StartArgs> for crate::tailwind::TailwindArgs {
 
         let input = std::fs::canonicalize(&input)
             .wrap_err_with(|| format!("Unable to find input file: {}", input.to_string_lossy()))
-            .suggestion("Try running `easywind init` to create a new project")
+            .with_suggestion(|| format!("Try running `easywind init {}` to create a new project", root_dir.display()))
             .suggestion("Try setting the location of your input file with `--input` flag")?;
 
         if std::fs::canonicalize(&output).is_err() {
