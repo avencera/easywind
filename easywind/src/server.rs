@@ -202,10 +202,12 @@ fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
 }
 
 pub async fn start(args: ServerArgs) -> Result<()> {
+    let port = port::default_or_available(args.port).expect("Unable to find available port");
+
     if args.open {
         tokio::task::spawn(async move {
             tokio::time::sleep(Duration::from_millis(200)).await;
-            if let Err(error) = open::that(format!("http://localhost:{}", args.port)) {
+            if let Err(error) = open::that(format!("http://localhost:{port}")) {
                 error!("Unable to open browser: {error:?}");
             }
         });
@@ -242,7 +244,6 @@ pub async fn start(args: ServerArgs) -> Result<()> {
         .layer(livereload)
         .layer(no_cache::layer());
 
-    let port = port::default_or_available(args.port).expect("Unable to find available port");
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
 
     info!("Serving html from {}", state.root_dir.to_string_lossy());
