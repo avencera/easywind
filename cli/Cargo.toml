@@ -4,6 +4,7 @@ name = "easywind_cli"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
+description  = "EasyWind - The easiest way to get started with Tailwind CSS"
 
 [dependencies]
 # workspace
@@ -23,3 +24,7 @@ eyre = "0.6"
 
 clap = { version = "4.3.21", features = ["derive", "unstable-styles"] }
 anstyle = "1.0.1"
+
+[[bin]]
+name = "easywind"
+path = "src/main.rs"
