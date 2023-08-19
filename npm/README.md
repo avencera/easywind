@@ -14,13 +14,25 @@ Install from a github release:
 
 or 
 
+Install using yarn
+
+`yarn global add easywind`
+
+or
+
+Install using npm
+
+`npm i -g easywind`
+
+or
+
 Install from crates.io (if you already have Rust installed)
 
 `cargo install easywind_cli`
 
 or
 
-Download a release directly from github: github.com/avencera/easywind/releases
+Download a release directly from github: [github.com/avencera/easywind/releases](https://github.com/avencera/easywind/releases/)
 
 ## Usage
 
