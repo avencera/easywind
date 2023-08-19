@@ -317,7 +317,7 @@ dependencies = [
 
 [[package]]
 name = "easywind"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "axum",
  "color-eyre",
@@ -346,9 +346,9 @@ dependencies = [
 
 [[package]]
 name = "easywind"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94fa11f109941219f56de98c67fdcc9aac5c8058a0b3eed983ea2670db07a2e6"
+checksum = "82471dc35133a03b6ed4c9ab9c23b0c9b3abc02924980d4cce551e659ab56d2e"
 dependencies = [
  "axum",
  "color-eyre",
@@ -377,12 +377,12 @@ dependencies = [
 
 [[package]]
 name = "easywind_cli"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anstyle",
  "clap",
  "color-eyre",
- "easywind 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "easywind 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "eyre",
  "futures",
  "log",
