@@ -1,5 +1,0 @@
-#!/bin/bash
-
-cargo build --release;  
-rm  /usr/local/bin/easywind; 
-ln -s "$(pwd)/target/release/easywind" /usr/local/bin

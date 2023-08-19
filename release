@@ -1,5 +1,0 @@
-#!/bin/bash
-
-TAG=v$(cargo pkgid -p easywind_cli | cut -d"@" -f2 | cut -d: -f2)
-git tag -a $TAG -m $TAG
-git push --tags
