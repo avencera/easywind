@@ -95,8 +95,7 @@ fn check_or_install_tailwind() -> Result<()> {
     download_tailwind_cli()?;
     info!("Successfully downloaded tailwind cli");
 
-    // make cli executable on unix
-    #[cfg(unix)]
+    // make cli executable on unix, funciton is no-op on windows
     make_tailwind_cli_executable()?;
 
     Ok(())
@@ -138,6 +137,7 @@ fn get_arch() -> Result<&'static str> {
     }
 }
 
+#[cfg(unix)]
 fn make_tailwind_cli_executable() -> Result<()> {
     use std::os::unix::prelude::PermissionsExt;
 
@@ -150,5 +150,10 @@ fn make_tailwind_cli_executable() -> Result<()> {
         .suggestion("Please install node from nodejs and try again")
         .suggestion("Go to: https://nodejs.org/en/download")?;
 
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn make_tailwind_cli_executable() -> Result<()> {
     Ok(())
 }
