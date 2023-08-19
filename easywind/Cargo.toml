@@ -3,7 +3,7 @@ authors = ["Praveen Perera <praveen@avencera.com>"]
 name = "easywind"
 description = "EasyWind CLI library"
 
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 
 license = "Apache-2.0"
