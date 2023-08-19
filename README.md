@@ -1,5 +1,31 @@
 # EasyWind [![CI](https://github.com/avencera/easywind/workflows/Mean%20Bean%20CI/badge.svg)](https://github.com/avencera/easywind/actions?query=workflow%3A%22Mean+Bean+CI%22)
 
+## What
+
+EasyWind is a CLI designed to be the easiest way to get started with TailwindCSS for static websites.
+
+EasyWind is a **tailwind project generator**, **tailwind compiler/watcher** and a **livereload server**. 
+
+With EasyWind you don't need anything else, no need to download brew, node or even the standalone Tailwind CLI. If you don't have node, EasyWind will download the tailwind cli and use it. 
+
+To you get started you only need two commands
+
+
+```shell
+# initialize a new project, with index.html and tailwind.config.js
+easywind init new-project
+
+# start a livereload server and a tailwind watcher in the same process
+easywind start new-project
+```
+
+## Who
+
+If you are already using Tailwind with Next.js or any other frontend or backend framework, you probably don't need EasyWind. 
+
+EasyWind is designed for people new to HTML/CSS and for people who just want an easy way to make static websites, without any fancy frameworks.
+
+
 ## Install
 
 Install using homebrew (mac and linux):
