@@ -20,6 +20,9 @@
   "keywords": [
     "tailwind",
     "tailwind css",
+    "tailwind project generator",
+    "livereload",
+    "live reload server"
   ],
   "bin": {
     "easywind": "bin/easywind"
