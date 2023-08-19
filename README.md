@@ -1,4 +1,4 @@
-# EasyWind - [![CI](https://github.com/avencera/easywind/workflows/Mean%20Bean%20CI/badge.svg)](https://github.com/avencera/easywind/actions?query=workflow%3A%22Mean+Bean+CI%22)
+# EasyWind [![CI](https://github.com/avencera/easywind/workflows/Mean%20Bean%20CI/badge.svg)](https://github.com/avencera/easywind/actions?query=workflow%3A%22Mean+Bean+CI%22)
 
 ## Install
 
