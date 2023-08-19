@@ -1,0 +1,37 @@
+{
+  "name": "easywind",
+  "version": "0.1.2",
+  "description": "The easiest way to get started with Tailwind CSS, without the need to install any build tools. A live reload server and tailwind project generator.",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "install": "node ./lib/postinstall.js || npm run prepack",
+    "prepack": "node ./lib/update-release.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "release.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avencera/easywind.git"
+  },
+  "keywords": [
+    "tailwind",
+    "tailwind css",
+  ],
+  "bin": {
+    "easywind": "bin/easywind"
+  },
+  "author": "Praveen Perera",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/avencera/easywind/issues"
+  },
+  "homepage": "https://github.com/avencera/easywind#readme",
+  "dependencies": {
+    "https-proxy-agent": "^4.0.0",
+    "proxy-from-env": "^1.1.0"
+  }
+}
