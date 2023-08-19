@@ -83,6 +83,7 @@ Options:
   -o, --open         Open in your browser
   -h, --help         Print help
 ```
+<img width="1680" alt="easywind_serve" src="https://github.com/avencera/easywind/assets/1775346/fa1f947a-480a-4991-a583-4d252f766769">
 
 ### easywind tailwind
 ```shell
