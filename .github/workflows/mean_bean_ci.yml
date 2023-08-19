@@ -60,7 +60,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        channel: [stable, beta, nightly]
+        channel: [stable]
         target:
           - x86_64-apple-darwin
           - aarch64-apple-darwin
@@ -80,8 +80,6 @@ jobs:
 
       - name: Test
         uses: actions-rs/cargo@v1
-        env:
-          SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk
         with:
           command: test
           args: --target ${{ matrix.target }}
