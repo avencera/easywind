@@ -62,7 +62,7 @@ Download a release directly from github: [github.com/avencera/easywind/releases]
 
 ## Usage
 
-You only need to commands to get started (no dependencies not even node):
+You only need two commands to get started (no dependencies not even node or the tailwind cli):
 
 `easywind init mywebsite` will create a project in a new directory, with a `tailwind.config.js` file and an `index.html` file.
 ***NOTE:** This command will also download the [standalone tailwindcss cli](https://github.com/tailwindlabs/tailwindcss/releases) if you don't have node on your system.*
