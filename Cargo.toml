@@ -2,9 +2,9 @@
 
 members = [
     "easywind",
-    "cli"
+    "easywind_cli"
 ]
 
 default-members = [
-    "cli"
+    "easywind_cli"
 ]
