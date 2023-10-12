@@ -14,8 +14,8 @@ documentation = "https://docs.rs/easywind"
 
 [dependencies]
 # workspace
-# easywind = "0.1.2"
-easywind = { path = "../easywind/" }
+easywind = "0.2"
+# easywind = { path = "../easywind/" }
 
 # async 
 futures = "0.3.28"
