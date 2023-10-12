@@ -16,7 +16,7 @@ To you get started you only need two commands
 easywind init new-project
 
 # start a livereload server and a tailwind watcher in the same process
-easywind start new-project
+easywind start new-project --open
 ```
 
 ## Who
