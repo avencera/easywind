@@ -1,6 +1,6 @@
 {
   "name": "easywind",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "The easiest way to get started with Tailwind CSS, without the need to install any build tools. A live reload server and tailwind project generator.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",

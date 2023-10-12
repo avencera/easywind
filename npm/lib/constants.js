@@ -3,5 +3,5 @@
 
 module.exports = {
   REPO: "avencera/easywind",
-  VERSION: "v0.1.2",
+  VERSION: "v0.2.0",
 };
