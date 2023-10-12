@@ -19,7 +19,7 @@ easywind init new-project
 cd new-project
 
 # start a livereload server and a tailwind watcher in the same process
-easywind start new-project --open
+easywind start . --open
 ```
 
 ## Who
