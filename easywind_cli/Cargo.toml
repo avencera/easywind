@@ -4,7 +4,7 @@ authors = ["Praveen Perera <praveen@avencera.com>"]
 name = "easywind_cli"
 description  = "EasyWind - The easiest way to get started with Tailwind CSS"
 
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 
 license = "Apache-2.0"
@@ -14,7 +14,8 @@ documentation = "https://docs.rs/easywind"
 
 [dependencies]
 # workspace
-easywind = "0.1.2"
+# easywind = "0.1.2"
+easywind = { path = "../easywind/" }
 
 # async 
 futures = "0.3.28"

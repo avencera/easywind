@@ -7,21 +7,33 @@ use eyre::{eyre, Context, Result};
 
 use crate::{consts::TAILWIND_CLI_PATH, validate};
 
-use super::TailwindArgs;
+use super::{installer, TailwindArgs};
 
 pub fn watch(args: TailwindArgs) -> Result<()> {
     let mut tailwind_args = base_args(&args)?;
     tailwind_args.push("--watch");
 
-    tailwind(&tailwind_args, &args.root_dir).wrap_err("failed to run tailwind")?;
+    if let Err(_) = tailwind(&tailwind_args, &args.root_dir) {
+        installer::check_npx_tailwind_works()?;
+        tailwind(&tailwind_args, &args.root_dir).wrap_err("failed to run tailwind")?
+    }
 
     Ok(())
 }
 
 pub fn build(args: TailwindArgs) -> Result<()> {
     let tailwind_args = base_args(&args)?;
-    tailwind(&tailwind_args, &args.root_dir).wrap_err("failed to run tailwind")?;
 
+    if let Err(_) = tailwind(&tailwind_args, &args.root_dir) {
+        installer::check_npx_tailwind_works()?;
+        tailwind(&tailwind_args, &args.root_dir).wrap_err("failed to run tailwind")?
+    }
+
+    Ok(())
+}
+
+pub fn npx_works() -> Result<()> {
+    duct::cmd("npx", ["tailwind", "--help"]).run()?;
     Ok(())
 }
 

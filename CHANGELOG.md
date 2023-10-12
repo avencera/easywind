@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Check for tailwind CLI on each `start`
+- Make sure npx tailwind works if theres an error
+
 ## [0.1.2] - 2023-08-19
 
 - Fix builds on windows

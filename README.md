@@ -15,6 +15,9 @@ To you get started you only need two commands
 # initialize a new project, with index.html and tailwind.config.js
 easywind init new-project
 
+# cd into the new project
+cd new-project
+
 # start a livereload server and a tailwind watcher in the same process
 easywind start new-project --open
 ```

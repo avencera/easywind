@@ -1,4 +1,5 @@
 pub mod cli;
+pub mod installer;
 
 use std::path::PathBuf;
 
@@ -28,11 +29,14 @@ pub fn start(args: TailwindArgs) -> Result<()> {
         .suggestion("Try setting the location of your input file with `--input` flag");
     }
 
+    // check or install or install tailwind on each start
+    crate::tailwind::installer::check_or_install()?;
+
     if args.watch {
         self::cli::watch(args)?;
     } else {
         self::cli::build(args)?;
-    }
+    };
 
     Ok(())
 }
