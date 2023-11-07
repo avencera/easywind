@@ -33,7 +33,7 @@ EasyWind is designed for people new to HTML/CSS and for people who just want an 
 
 Install using homebrew (mac and linux):
 
-`brew install avencera/taps/easywind`
+`brew install avencera/tap/easywind`
 
 or
 
