@@ -18,8 +18,8 @@ pub static CONFIG_DIR: Lazy<PathBuf> = Lazy::new(|| {
 pub static TAILWIND_BIN_DIR: Lazy<PathBuf> = Lazy::new(|| {
     CONFIG_DIR
         .join("bin")
-        .join("tailwind")
+        .join("tailwindcss")
         .join(LATEST_TAILWIND_VERSION)
 });
 
-pub static TAILWIND_CLI_PATH: Lazy<PathBuf> = Lazy::new(|| TAILWIND_BIN_DIR.join("tailwind"));
+pub static TAILWIND_CLI_PATH: Lazy<PathBuf> = Lazy::new(|| TAILWIND_BIN_DIR.join("tailwindcss"));

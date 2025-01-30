@@ -1,5 +1,7 @@
 #!/bin/bash
 
+path=$HOME/.local/bin
+
 cargo build --release;  
-rm  /usr/local/bin/easywind; 
-ln -s "$(pwd)/target/release/easywind" /usr/local/bin
+rm  ${path}/easywind || true;
+ln -s "$(pwd)/target/release/easywind" $path

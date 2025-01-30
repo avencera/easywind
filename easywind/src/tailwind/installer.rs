@@ -71,8 +71,8 @@ fn download_tailwind_cli() -> Result<()> {
         "https://github.com/tailwindlabs/tailwindcss/releases/download/v{tailwind_version}/tailwindcss-{os}-{arch}",
     );
 
-    let response = ureq::get(&download_link).call()?;
-    let mut reader = response.into_reader();
+    let mut response = ureq::get(&download_link).call()?;
+    let mut reader = response.body_mut().as_reader();
 
     std::fs::create_dir_all(TAILWIND_BIN_DIR.as_path())?;
 

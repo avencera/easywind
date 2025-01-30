@@ -4,10 +4,10 @@ pub mod port;
 pub mod reload;
 
 use axum::{
-    body::{self, Empty, Full},
+    body::Bytes,
     extract::{Path, State},
-    http::{header, HeaderValue, StatusCode},
-    response::{Html, IntoResponse, Response},
+    http::{self, header, HeaderMap, HeaderValue, StatusCode},
+    response::{Html, IntoResponse},
     routing::get,
     Router,
 };
@@ -168,36 +168,26 @@ fn index_template(root_dir: &PathBuf, path: PathBuf) -> Result<Html<String>, Err
 fn static_path(path: PathBuf) -> Result<impl IntoResponse, Error> {
     let mime_type = mime_guess::from_path(&path).first_or_text_plain();
 
-    match StdFile::open(&path).ok() {
-        None => {
-            let response = Response::builder()
-                .status(StatusCode::NOT_FOUND)
-                .body(body::boxed(Empty::new()))?;
+    match StdFile::open(&path) {
+        Ok(mut file) => {
+            let mut buffer = Vec::new();
+            file.read_to_end(&mut buffer)
+                .map_err(|_| Error::FileReadBufferOverflow(path.clone()))?;
 
-            Ok(response)
+            let mut headers = HeaderMap::new();
+            headers.insert(
+                header::CONTENT_TYPE,
+                HeaderValue::from_str(mime_type.as_ref()).expect("Invalid mime type"),
+            );
+
+            Ok((StatusCode::OK, headers, Bytes::from(buffer)))
         }
 
-        Some(mut file) => {
-            let mut buffer = vec![
-                0;
-                file.metadata()
-                    .map_err(|_| Error::FileMetadataError(path.clone()))?
-                    .len() as usize
-            ];
-
-            file.read_exact(&mut buffer)
-                .map_err(|_| Error::FileReadBufferOverflow(path))?;
-
-            let response = Response::builder()
-                .status(StatusCode::OK)
-                .header(
-                    header::CONTENT_TYPE,
-                    HeaderValue::from_str(mime_type.as_ref()).unwrap(),
-                )
-                .body(body::boxed(Full::from(buffer)))?;
-
-            Ok(response)
-        }
+        Err(_) => Ok((
+            StatusCode::NOT_FOUND,
+            HeaderMap::new(),
+            Bytes::from("File not found"),
+        )),
     }
 }
 
@@ -222,7 +212,6 @@ pub async fn start(args: ServerArgs) -> Result<()> {
 
     let mut debouncer = notify_debouncer_mini::new_debouncer(
         Duration::from_millis(80),
-        None,
         move |event: DebounceEventResult| {
             let _ = reload::handle_reload(event, &reloader);
         },
@@ -249,9 +238,8 @@ pub async fn start(args: ServerArgs) -> Result<()> {
     info!("Serving html from {}", state.root_dir.to_string_lossy());
     info!("Starting server at {}", addr);
 
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await?;
+    let listener = tokio::net::TcpListener::bind(&addr).await?;
+    axum::serve(listener, app.into_make_service()).await?;
 
     Ok(())
 }

@@ -17,26 +17,25 @@ dev = ["minijinja/loader"]
 [dependencies]
 # async 
 futures = "0.3.28"
-tokio = {version = "1.32", features = ["rt-multi-thread", "macros"]}
+tokio = { version = "1.43", features = ["rt-multi-thread", "macros"] }
 
 # error handling
 color-eyre = "0.6"
 eyre = "0.6"
-thiserror = "1.0"
+thiserror = "2.0"
 
 # http
-axum = "0.6.20"
-tower-http = { version = "0.4", features = ["fs", "set-header"] }
-tower = "0.4.13"
-http = "0.2.9"
-ureq = "2.7.1"
+axum = "0.8"
+tower-http = { version = "0.6", features = ["fs", "set-header"] }
+tower = "0.5"
+ureq = "3"
 
 # livereload
-tower-livereload = { version = "0.8"}
-notify-debouncer-mini = "0.3.0"
+tower-livereload = { version = "0.9" }
+notify-debouncer-mini = "0.6"
 
 # templating 
-minijinja = "1.0"
+minijinja = "2.0"
 include_dir = "0.7.3"
 
 # logging
@@ -47,11 +46,11 @@ pretty_env_logger = "0.5"
 open = "5.0.0"
 mime_guess = "2.0.4"
 once_cell = "1.18.0"
-strum = { version = "0.25.0", features = ["derive"] }
+strum = { version = "0.26", features = ["derive"] }
 
 # external clis
 duct = "0.13.6"
-which = "4.4.0"
+which = "7.0"
 
 # config / download dir
 etcetera = "0.8.0"

@@ -33,7 +33,7 @@ pub fn build(args: TailwindArgs) -> Result<()> {
 }
 
 pub fn npx_works() -> Result<()> {
-    duct::cmd("npx", ["tailwind", "--help"]).run()?;
+    duct::cmd("npx", ["tailwindcss", "--help"]).run()?;
     Ok(())
 }
 
@@ -63,7 +63,7 @@ fn base_args(args: &TailwindArgs) -> Result<Vec<&str>> {
 
 pub fn tailwind(args: &[&str], root_dir: &PathBuf) -> Result<(), std::io::Error> {
     let tailwind = if validate::check_node_deps().is_ok() {
-        duct::cmd("npx", ["tailwind"].iter().chain(args))
+        duct::cmd("npx", ["tailwindcss"].iter().chain(args))
     } else {
         duct::cmd(TAILWIND_CLI_PATH.as_os_str(), args)
     };

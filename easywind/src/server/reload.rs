@@ -17,7 +17,7 @@ pub(crate) fn handle_reload(event: DebounceEventResult, reloader: &Reloader) -> 
             }
 
             let Some(extention) = path.extension() else {
-                return
+                return;
             };
 
             // only reload files that are in watcher file types
@@ -27,9 +27,7 @@ pub(crate) fn handle_reload(event: DebounceEventResult, reloader: &Reloader) -> 
             }
         }),
 
-        Err(errors) => errors
-            .iter()
-            .for_each(|error| error!("Watcher Error {error:?}")),
+        Err(errors) => error!("Error while watching for changes: {:?}", errors),
     }
 
     Ok(())
