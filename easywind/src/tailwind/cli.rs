@@ -13,7 +13,7 @@ pub fn watch(args: TailwindArgs) -> Result<()> {
     let mut tailwind_args = base_args(&args)?;
     tailwind_args.push("--watch");
 
-    if let Err(_) = tailwind(&tailwind_args, &args.root_dir) {
+    if tailwind(&tailwind_args, &args.root_dir).is_err() {
         installer::check_npx_tailwind_works()?;
         tailwind(&tailwind_args, &args.root_dir).wrap_err("failed to run tailwind")?
     }
@@ -24,7 +24,7 @@ pub fn watch(args: TailwindArgs) -> Result<()> {
 pub fn build(args: TailwindArgs) -> Result<()> {
     let tailwind_args = base_args(&args)?;
 
-    if let Err(_) = tailwind(&tailwind_args, &args.root_dir) {
+    if tailwind(&tailwind_args, &args.root_dir).is_err() {
         installer::check_npx_tailwind_works()?;
         tailwind(&tailwind_args, &args.root_dir).wrap_err("failed to run tailwind")?
     }

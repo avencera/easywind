@@ -79,6 +79,7 @@ fn download_tailwind_cli() -> Result<()> {
     let mut tailwind_cli_file = std::fs::OpenOptions::new()
         .write(true)
         .create(true)
+        .truncate(true)
         .open(TAILWIND_CLI_PATH.as_path())
         .wrap_err("Unable to create tailwind bin")?;
 
